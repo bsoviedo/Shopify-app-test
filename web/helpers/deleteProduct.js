@@ -1,29 +1,26 @@
 import { Shopify } from "@shopify/shopify-api";
 
 
-export default async function getProducts(session) {
+
+export default async function deleteProduct(session, id) {
     const client = new Shopify.Clients.Graphql(session.shop, session.accessToken);
 
-    const queryString = `{
-        products (first: 200) {
-          edges {
-            node {
-              id
-              title
-            }
-          }
-        }
-      }`
-      
+
     try {
      
         const products = await client.query({
-            data: queryString,
+            data:     ` 
+            mutation {
+                productDelete(input: {id: "gid://shopify/Product/${id}"})
+                {
+                  deletedProductId
+                }
+              }
+               `,
           });
 
-          //console.log(products.body.data.products.edges)
-
-        return products.body.data.products.edges
+        ///console.log(products)
+        return products
 
          
       

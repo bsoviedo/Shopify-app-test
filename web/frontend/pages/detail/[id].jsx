@@ -1,0 +1,68 @@
+import React from 'react'
+import {useRouteParams} from '@shopify/hydrogen';
+import {useLocation, useNavigate} from 'react-router-dom'
+import { useAppQuery, useAuthenticatedFetch } from '../../hooks';
+
+export default function DetailProduct () {  
+
+  const {pathname} = useLocation()
+  const id = pathname.split('/')[pathname.split('/').length - 1]
+  
+  let navigate = useNavigate()
+
+
+  
+  let {data, status, error, isFetching} = useAppQuery({
+    url: `/api/products/${id}`,
+    reactQueryOptions: {
+      refetchOnReconnect: false,  
+    },    
+  }) 
+
+  const authenticatedFetch = useAuthenticatedFetch();
+
+
+  let handleDeleteElement = async ()=>{
+
+    let res = await authenticatedFetch(`/api/products/delete/${id}`)
+
+    let data= await res.json()
+
+    alert( data.success ? 'deleted': 'something hapeened')
+
+    data.success && navigate('/listproducts')
+    
+  }
+
+  
+  return (
+
+    <div style={{'display': 'flex', 'flexDirection': 'column'}}> 
+      
+      
+      <h1 style={{'fontSize': '5rem', 'fontWeight' : 'bold', 'margin': '10% auto'}}> {data ? data.body.title : 'Cargando....'} </h1>
+
+      <p style={{'textAlign': 'justify', 'margin': '0% 10% 0% 10%'}}>
+
+        {data ? 
+      `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rhoncus metus a odio aliquam hendrerit. Morbi elit sapien, ullamcorper sed erat nec, volutpat porta odio. Vestibulum bibendum interdum nulla eu porttitor. Nam gravida elementum orci sed rutrum. In suscipit ornare risus sed aliquet. Integer lacus leo, bibendum at lobortis non, convallis ac dui. Suspendisse vel dignissim dolor. Nullam pellentesque odio faucibus tortor convallis ullamcorper. Maecenas tempor ullamcorper mi vel lacinia. Maecenas eros sem, tempus ut orci et, consequat eleifend odio. Morbi malesuada faucibus metus, quis ullamcorper justo semper vel. Sed eu luctus quam, eget luctus diam. Integer id iaculis odio. Etiam ultricies, mi eget aliquam aliquam, dolor eros ultrices nunc, sed vestibulum lorem magna sit amet elit. Nullam vel vulputate ligula, ut elementum tortor.
+
+Phasellus tristique ultrices risus. Integer luctus et odio eu congue. Maecenas venenatis neque at ante condimentum tristique. Sed risus lacus, mattis quis urna eget, aliquam placerat est. Phasellus consectetur mi at ligula pharetra rhoncus. Mauris posuere libero id leo consequat, in ullamcorper diam accumsan. Maecenas sit amet efficitur risus.
+ ` : 
+
+ 'Cargando....'
+
+}
+      </p>
+
+        <button onClick={()=>{handleDeleteElement()}} style={{'backgroundColor': 'red', 'marginTop': '5rem', 'cursor': 'pointer'}}>
+          Eliminar
+
+        </button>
+
+        <button onClick={()=>{navigate('/ListProducts')}} style={{'marginTop': '2rem', 'cursor': 'pointer'}}>
+          volver 
+        </button>
+    </div>
+  )
+}  

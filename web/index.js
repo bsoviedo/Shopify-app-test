@@ -12,6 +12,8 @@ import productCreator from "./helpers/product-creator.js";
 import { BillingInterval } from "./helpers/ensure-billing.js";
 import { AppInstallations } from "./app_installations.js";
 import getProducts from "./helpers/getProducts.js";
+import getProductById from "./helpers/getProductById.js";
+import deleteProduct from "./helpers/deleteProduct.js";
 
 const USE_ONLINE_TOKENS = false;
 const TOP_LEVEL_OAUTH_COOKIE = "shopify_top_level_oauth";
@@ -129,6 +131,50 @@ export async function createServer(
     try {
       let data= await getProducts(session);
       body= data
+    } catch (e) {
+      console.log(`Failed to process products: ${e.message}`);
+      status = 500;
+      error = e.message;
+    }
+    res.status(status).send({ success: status === 200, body , error });
+  });
+
+  app.get("/api/products/:id", async (req, res) => {
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+    let status = 200;   
+    let error = null;
+    let body= null;
+    let {id} = req.params 
+  
+    try {
+      let data= await getProductById(session, id)
+      body = data
+    } catch (e) {
+      console.log(`Failed to process products: ${e.message}`);
+      status = 500;
+      error = e.message;
+    }
+    res.status(status).send({ success: status === 200, body , error });
+  });
+
+  app.get("/api/products/delete/:id", async (req, res) => {
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+    let status = 200;   
+    let error = null;
+    let body= null;
+    let {id} = req.params 
+  
+    try {
+       let data= await deleteProduct(session, id)
+      body = data 
     } catch (e) {
       console.log(`Failed to process products: ${e.message}`);
       status = 500;
