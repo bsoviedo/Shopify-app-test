@@ -1,6 +1,7 @@
-import React, {useState} from 'react'
+import React, {useState, useCallback} from 'react'
 import { useAppQuery, useAuthenticatedFetch } from '../hooks'
 import { useNavigate } from 'react-router-dom'
+import {Page, Button, DataTable, Card, Frame} from '@shopify/polaris'
 
 export default function ListProducts(){
 
@@ -13,25 +14,65 @@ export default function ListProducts(){
           refetchOnReconnect: false,  
         },    
       }) 
+
+      
+      const rows = data?.body?.map(({node}, id)=>{
+
+        let arr = Object.values(node)
+
+        arr.splice(0,0, id +1)
+
+        arr.splice(3,0,  <Button style={{'cursor': 'pointer'}}  onClick={()=>{navigate(`/detail/${node.id.split('/')[node.id.split('/').length -1]}`)}}>
+                           +
+                        </Button>
+                        ) 
+
+        return arr
+      })
+
+
       
       
-
-   // console.log(data, status,error, is   Fetching)
-
-
+   
+      
 
    let number= 0
   return ( 
-    <div>
-        <button onClick={()=>{navigate('/')}}>
+<Frame>
+    <Page title="List products">
+    {/* <Card sectioned>
+      <Button onClick={() => alert('Button clicked!')}>Example button</Button>
+    </Card> */}
+ 
+        <Button onClick={()=>{navigate('/')}}>
             Back to index
-         </button>
+         </Button>
 
          {data ? 
   
         <div style={{'height':'100vh','display':'flex', 'flexDirection': 'column', 'justifyContent': 'center', 'alignItems': 'center'}}>
-            
-            <table >
+          
+          <Card>
+
+          <DataTable
+          columnContentTypes={[
+            'numeric',
+            'text',
+            'text',
+          ]}
+          headings={[
+            'Numero',
+            'id',
+            'Nombre',
+           
+          ]}
+          rows={rows}
+          totals={['', '', '']}
+          hasZebraStripingOnData={true}
+        />
+
+        </Card>
+          {/*   <table >
                 <thead>
                     <tr>
                         <th style={{'border': '1px black solid', 'backgroundColor': '#04AA6D'}}>
@@ -71,7 +112,7 @@ export default function ListProducts(){
             })
         }
 
-            </table>
+            </table> */}
 
           
         </div>
@@ -83,8 +124,11 @@ export default function ListProducts(){
 }
 
     
-    </div>
+   
+
+    </Page>
   
+    </Frame>
   
   )
 }

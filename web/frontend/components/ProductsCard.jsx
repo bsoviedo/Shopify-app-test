@@ -5,6 +5,7 @@ import {
   TextContainer,
   DisplayText,
   TextStyle,
+  Button,
 } from "@shopify/polaris";
 import { Toast } from "@shopify/app-bridge-react";
 import { useAppQuery, useAuthenticatedFetch } from "../hooks";
@@ -83,9 +84,9 @@ export function ProductsCard() {
           </Heading>
         </TextContainer>
 
-        <button onClick={()=>{navigate('/listproducts')}}>
+        <Button onClick={()=>{navigate('/listproducts')}}>
           ver mis productos
-         </button>
+         </Button>
 
 
       </Card>
