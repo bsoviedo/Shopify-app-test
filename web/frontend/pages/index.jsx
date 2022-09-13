@@ -13,8 +13,46 @@ import { TitleBar } from "@shopify/app-bridge-react";
 import { trophyImage } from "../assets";
 
 import { ProductsCard } from "../components";
+import { useAuthenticatedFetch } from "../hooks";
 
 export default function HomePage() {
+
+  
+  let authFetch = useAuthenticatedFetch()
+
+  const scriptUrl = `https://8af5-181-55-183-26.ngrok.io?shop=store-test-0629.myshopify.com&host=c3RvcmUtdGVzdC0wNjI5Lm15c2hvcGlmeS5jb20vYWRtaW4/admin/api/2021-10/script_tags.json`;
+  
+  const requestBody = {
+      "script_tag": {
+          "event": "onload",
+          "src": `https://github.com/bsoviedo/some_works/blob/master/scrip_tag.js`,
+      }
+  };
+
+  const optionsWithPost = { method: 'POST', body: JSON.stringify(requestBody) };
+
+  let scripTags = async()=>{
+    let res = await  authFetch(`${scriptUrl}`, optionsWithPost)
+
+
+    let data= await res.text()
+ 
+    console.log(data)
+ 
+
+  }
+
+  scripTags()
+
+
+
+   /*    .then((res) => console.log(res.json()) ) 
+      .then(data=> console.log(data) ) 
+      .catch((error) => console.log('error', error)); */
+ 
+//  createScriptTag()
+
+ 
   return (
     <Page narrowWidth>
       <TitleBar title="App name" primaryAction={null} />

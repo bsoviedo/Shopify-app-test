@@ -14,6 +14,7 @@ import { AppInstallations } from "./app_installations.js";
 import getProducts from "./helpers/getProducts.js";
 import getProductById from "./helpers/getProductById.js";
 import deleteProduct from "./helpers/deleteProduct.js";
+ 
 
 const USE_ONLINE_TOKENS = false;
 const TOP_LEVEL_OAUTH_COOKIE = "shopify_top_level_oauth";
@@ -104,6 +105,9 @@ export async function createServer(
     })
   );
 
+
+
+
   app.get("/api/products/count", async (req, res) => {
     const session = await Shopify.Utils.loadCurrentSession(
       req,
@@ -138,6 +142,7 @@ export async function createServer(
     }
     res.status(status).send({ success: status === 200, body , error });
   });
+
 
   app.get("/api/products/:id", async (req, res) => {
     const session = await Shopify.Utils.loadCurrentSession(

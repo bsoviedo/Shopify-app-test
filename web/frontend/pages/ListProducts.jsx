@@ -31,12 +31,7 @@ export default function ListProducts(){
       })
 
 
-      
-      
-   
-      
-
-   let number= 0
+    
   return ( 
 <Frame>
     <Page title="List products">
