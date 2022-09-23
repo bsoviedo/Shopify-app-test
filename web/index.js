@@ -14,7 +14,11 @@ import { AppInstallations } from "./app_installations.js";
 import getProducts from "./helpers/getProducts.js";
 import getProductById from "./helpers/getProductById.js";
 import deleteProduct from "./helpers/deleteProduct.js";
- 
+//import {ScriptTag} from '@shopify/shopify-api/dist0/rest-resources/2022-07/index.js';
+import cors from 'cors';
+import scriptTagCreator from "./helpers/creataeScriptTag.js";
+
+
 
 const USE_ONLINE_TOKENS = false;
 const TOP_LEVEL_OAUTH_COOKIE = "shopify_top_level_oauth";
@@ -37,8 +41,11 @@ Shopify.Context.initialize({
   IS_EMBEDDED_APP: true,
   // This should be replaced with your preferred storage strategy
   SESSION_STORAGE: new Shopify.Session.SQLiteSessionStorage(DB_PATH),
-});
+});  
+    
 
+
+ 
 Shopify.Webhooks.Registry.addHandler("APP_UNINSTALLED", {
   path: "/api/webhooks",
   webhookHandler: async (_topic, shop, _body) => {
@@ -75,6 +82,11 @@ export async function createServer(
   app.set("top-level-oauth-cookie", TOP_LEVEL_OAUTH_COOKIE);
   app.set("use-online-tokens", USE_ONLINE_TOKENS);
 
+  app.use(cors({
+    origin: '*'
+  }))
+
+
   app.use(cookieParser(Shopify.Context.API_SECRET_KEY));
 
   applyAuthMiddleware(app, {
@@ -97,6 +109,44 @@ export async function createServer(
     }
   });
 
+
+  app.post('/admin/api/2022-07/script_tags.json', async(req,res)=>{
+
+    console.log(req.body)
+
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+
+    console.log(session)
+    /* const script_tag = new ScriptTag({session: test_session});
+    script_tag.event = "onload";
+    script_tag.src = "https://cdn.jsdelivr.net/gh/bsoviedo/some_works/scrip_tag.js"; */
+    /* let response = await script_tag.save({
+      update: true,
+    }); */
+/* 
+    res.status(200).json({
+      ok: true,
+      message: response
+    }) */
+  }) 
+
+
+  app.get('admin/api/2022-07/script_tags.json', async(req,res)=>{
+    const test_session = await Shopify.Utils.loadCurrentSession(req, res);
+    let data= await ScriptTag.all({ 
+        session: test_session,
+      }); 
+
+      console.log(data)
+  })
+
+  
+ 
+
   // All endpoints after this point will require an active session
   app.use(
     "/api/*",
@@ -104,6 +154,11 @@ export async function createServer(
       billing: billingSettings,
     })
   );
+
+
+  
+
+
 
 
 
@@ -114,6 +169,8 @@ export async function createServer(
       res,
       app.get("use-online-tokens")
     );
+
+    //console.log(req)
     const { Product } = await import(
       `@shopify/shopify-api/dist/rest-resources/${Shopify.Context.API_VERSION}/index.js`
     );
@@ -142,6 +199,7 @@ export async function createServer(
     }
     res.status(status).send({ success: status === 200, body , error });
   });
+
 
 
   app.get("/api/products/:id", async (req, res) => {
@@ -210,6 +268,25 @@ export async function createServer(
   // All endpoints after this point will have access to a request.body
   // attribute, as a result of the express.json() middleware
   app.use(express.json());
+
+
+    
+  app.post("/api/scriptTags", async (req, res) => {
+    const session = await Shopify.Utils.loadCurrentSession(
+      req,
+      res,
+      app.get("use-online-tokens")
+    );
+
+
+   let response = await scriptTagCreator(session, req.body.src)
+
+    
+    res.status(200).json({ok:true, response})
+  });
+ 
+
+
 
   app.use((req, res, next) => {
     const shop = Shopify.Utils.sanitizeShop(req.query.shop);

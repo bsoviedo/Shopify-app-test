@@ -15,35 +15,129 @@ import { trophyImage } from "../assets";
 import { ProductsCard } from "../components";
 import { useAuthenticatedFetch } from "../hooks";
 
+import axios from 'axios'
+
+import {gql, useMutation} from '@apollo/client'
+
+
 export default function HomePage() {
 
+
+  let useAuthFetch= useAuthenticatedFetch()
+
+
+
+  let createScriptTag=async()=>{
+
+ 
+    let sendData= {  
+      
+        src: "https://cdn.jsdelivr.net/gh/bsoviedo/some_works/scrip_tag.js"
+      
+    } 
+
+    let res = await useAuthFetch('/api/scriptTags', {
+      method: 'POST', 
+      body: JSON.stringify(sendData ) ,
+      headers: {                
+        "Content-type": "application/json"
+    }
+    })
+
+    let data= await res.json()
+
+
+    console.log(data)
+  }
+
+  createScriptTag()
+
+/*   const CREATE_SCRIPTAG_QUERY = gql`mutation{
+    scriptTagCreate(input: [
+      cache: false, 
+      displayScope: All, 
+      src:"https://cdn.jsdelivr.net/gh/bsoviedo/some_works/scrip_tag.js"
+    }){
+      scriptTag{
+        id
+        src
+        displayScope
+      }
+    }
+    ])
+  }`
+  const [createScriptTagMutation, {data}] = useMutation(CREATE_SCRIPTAG_QUERY)
+
+  createScriptTagMutation()
+ */
+
+/* 
   
   let authFetch = useAuthenticatedFetch()
 
-  const scriptUrl = `https://8af5-181-55-183-26.ngrok.io?shop=store-test-0629.myshopify.com&host=c3RvcmUtdGVzdC0wNjI5Lm15c2hvcGlmeS5jb20vYWRtaW4/admin/api/2021-10/script_tags.json`;
+
+
+   let getScripTags= async()=>{
+    
+    let res = await axios.get('https://store-test-0629.myshopify.com/admin/api/2022-07/script_tags.json',{  mode: 'no-cors', headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': 'true'
+  }})
+
+    let data= await res.json()
+
+
+    console.log(data)
+  }
+
+
+  getScripTags()
+ 
   
-  const requestBody = {
+  const scriptUrl = `https://9925-181-55-183-26.ngrok.io/admin/api/2022-07/script_tags.json`;
+  
+  const requestBody = { 
       "script_tag": {
           "event": "onload",
-          "src": `https://github.com/bsoviedo/some_works/blob/master/scrip_tag.js`,
+          "src": `https://cdn.jsdelivr.net/gh/bsoviedo/some_works/scrip_tag.js`,
       }
   };
+
+
+  
 
   const optionsWithPost = { method: 'POST', body: JSON.stringify(requestBody) };
 
   let scripTags = async()=>{
-    let res = await  authFetch(`${scriptUrl}`, optionsWithPost)
+
+    let res = await axios.post(`${scriptUrl}`, optionsWithPost, {
+      mode: "cors",
+      credentials: "include",
+    //  method: "PATCH",
+      headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': 'true'
+      }}
+    )
+
+    console.log(res)
 
 
-    let data= await res.text()
+    let data= await res.json()
  
     console.log(data)
  
 
   }
 
-  scripTags()
 
+
+  //scripTags()
+  */
 
 
    /*    .then((res) => console.log(res.json()) ) 

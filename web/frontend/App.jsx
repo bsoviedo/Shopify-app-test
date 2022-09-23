@@ -3,10 +3,13 @@ import { NavigationMenu } from "@shopify/app-bridge-react";
 import Routes from "./Routes";
 
 import {
-  AppBridgeProvider,
+  AppBridgeProvider, 
   QueryProvider,
   PolarisProvider,
 } from "./components";
+  
+
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 
 
 export default function App() {
@@ -15,11 +18,18 @@ export default function App() {
   const pages = import.meta.globEager("./pages/**/!(*.test.[jt]sx)*.([jt]sx)");
 
 
+  const client = new ApolloClient({
+    uri: '/',
+    cache: new InMemoryCache(),
+  });
+
   return (
     <PolarisProvider>
       <BrowserRouter>
         <AppBridgeProvider> 
           <QueryProvider>
+          <ApolloProvider client={client}>
+
             <NavigationMenu
               navigationLinks={[
                 {
@@ -29,6 +39,8 @@ export default function App() {
               ]}
             />
             <Routes pages={pages} />
+
+            </ApolloProvider>
           </QueryProvider>
         </AppBridgeProvider>
       </BrowserRouter>
